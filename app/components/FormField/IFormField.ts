@@ -4,5 +4,6 @@ export interface IFormField {
     type?: string
     value: any
     onChange?: (...args: any) => any
+    error?: string
   }
   
