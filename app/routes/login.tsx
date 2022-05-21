@@ -1,7 +1,7 @@
 // app/routes/login.tsx
 
 import { useRef, useEffect, useState } from "react";
-import { Layout } from "~/components/layout";
+import { Layout } from "~/components/Layout";
 import { FormField } from "~/components/FormField/FormField";
 import {
   ActionFunction,
@@ -34,6 +34,7 @@ export const action: ActionFunction = async ({ request }) => {
     typeof email !== "string" ||
     typeof password !== "string"
   ) {
+    console.log("Invalid form data");
     return json(
       {
         error: "Invalid Form Data",
@@ -47,6 +48,8 @@ export const action: ActionFunction = async ({ request }) => {
     action === "register" &&
     (typeof firstName !== "string" || typeof lastName !== "string")
   ) {
+    console.log("Invalid form data");
+
     return json(
       {
         error: "Invalid Form Data",
@@ -67,6 +70,7 @@ export const action: ActionFunction = async ({ request }) => {
       : {}),
   };
   if (Object.values(errors).some(Boolean)) {
+    console.log("Invalid form data");
     return json(
       {
         errors,
@@ -87,6 +91,7 @@ export const action: ActionFunction = async ({ request }) => {
       return await register({ email, password, firstName, lastName });
     }
     default:
+      console.log("Invalid form data");
       return json({ error: `Invalid Form Data` }, { status: 400 });
   }
 };
