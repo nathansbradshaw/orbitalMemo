@@ -10,13 +10,17 @@
     "dev": "concurrently \"npm run dev:css\" \"remix dev\"",
     "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
     "dev:remix": "remix watch",
-    "start": "cross-env NODE_ENV=production node ./server.js"
+    "start": "cross-env NODE_ENV=production node ./server.js",
+    "database": "npx prisma format && npx prisma generate && npx prisma db push",
+    "prisma-format": "npx prisma format",
+    "prisma-generate": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^3.14.0",
     "@remix-run/express": "^1.4.3",
     "@remix-run/node": "^1.4.3",
     "@remix-run/react": "^1.4.3",
+    "@types/node-cron": "^3.0.1",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
