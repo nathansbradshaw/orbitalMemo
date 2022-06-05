@@ -1,21 +1,30 @@
 const { PrismaClient } = require("@prisma/client");
 let prisma = new PrismaClient();
 const cron = require("node-cron");
+const Pusher = require("pusher");
+
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID,
+  key: process.env.PUSHER_APP_KEY,
+  secret: process.env.PUSHER_SECRET,
+  cluster: process.env.PUSHER_CLUSTER, // if `host` is present, it will override the `cluster` option.
+  // a base64 string which encodes 32 bytes, used to derive the per-channel encryption keys (see below!)
+});
 // Schedule tasks to be run on the server.
 cron.schedule("* * * * *", async function () {
   console.log("running a task every minute");
   await prisma.$connect();
 
   //TODO get all the reminders
-  const reminders = await getAllReminders();
+  const reminders = await getAllPastDueReminders();
   console.log("reminders", reminders);
-  //TODO look for past due reminders
-  const pastDueReminders = reminders.filter((reminder) => {
-    return reminder.sendReminderAt < new Date();
-  });
-  console.log("pastDueReminders", pastDueReminders);
-  pastDueReminders.map((reminder) => {
+
+  //TODO batch send the reminders
+  reminders.map((reminder) => {
     console.log("over due", reminder);
+    pusher.trigger(`reminder-${reminder.userId}`, "overdue", {
+      reminder,
+    });
     //
     //get user
     // prisma.user
@@ -43,4 +52,17 @@ const getAllReminders = async () => {
     console.log("error", err);
   });
 };
+
+//Get all past due reminders
+const getAllPastDueReminders = async () => {
+  console.log("get all reminders");
+  return prisma.reminder.findMany({
+    where: {
+      sendReminderAt: {
+        lt: new Date(),
+      },
+    },
+  });
+};
+
 // export {};

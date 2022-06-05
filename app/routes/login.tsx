@@ -16,6 +16,7 @@ import {
 } from "~/utils/validators.server";
 import { login, register, getUser } from "~/utils/auth.server";
 import { useActionData } from "@remix-run/react";
+import { backgroundColorMap, colorMap } from "~/utils/constants";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return (await getUser(request)) ? redirect("/") : null;
@@ -34,7 +35,7 @@ export const action: ActionFunction = async ({ request }) => {
     typeof email !== "string" ||
     typeof password !== "string"
   ) {
-    console.log("Invalid form data");
+    // console.log("Invalid form data");
     return json(
       {
         error: "Invalid Form Data",
@@ -48,7 +49,7 @@ export const action: ActionFunction = async ({ request }) => {
     action === "register" &&
     (typeof firstName !== "string" || typeof lastName !== "string")
   ) {
-    console.log("Invalid form data");
+    // console.log("Invalid form data");
 
     return json(
       {
@@ -70,7 +71,6 @@ export const action: ActionFunction = async ({ request }) => {
       : {}),
   };
   if (Object.values(errors).some(Boolean)) {
-    console.log("Invalid form data");
     return json(
       {
         errors,
@@ -91,7 +91,6 @@ export const action: ActionFunction = async ({ request }) => {
       return await register({ email, password, firstName, lastName });
     }
     default:
-      console.log("Invalid form data");
       return json({ error: `Invalid Form Data` }, { status: 400 });
   }
 };
@@ -100,7 +99,7 @@ export default function Login() {
   const [action, setAction] = useState("login");
   const actionData = useActionData();
   const firstLoad = useRef(true);
-  const [error, setErrors] = useState(actionData?.error || {});
+  const [errors, setErrors] = useState(actionData?.errors || {});
   const [formError, setFormError] = useState(actionData?.error || "");
   const [formData, setFormData] = useState({
     email: actionData?.fields?.email || "",
@@ -110,9 +109,10 @@ export default function Login() {
   });
 
   useEffect(() => {
+    console.log(actionData);
     if (!firstLoad.current) {
       const newState = {
-        email: "",
+        email: actionData?.fields?.email || "",
         password: "",
         firstName: "",
         lastName: "",
@@ -146,20 +146,22 @@ export default function Login() {
       <div className="h-full justify-center items-center flex flex-col gap-y-4">
         <button
           onClick={() => setAction(action == "login" ? "register" : "login")}
-          className="absolute top-8 right-8 rounded-xl bg-yellow-300 font-semibold text-blue-600 px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1"
+          className={`absolute top-8 right-8 rounded-md font-semibold ${
+            (colorMap.PRIMARY_DARK, backgroundColorMap.TEAL)
+          } px-3 py-2 transition duration-300 ease-in-out hover:bg-amber-300 hover:-translate-y-1`}
         >
           {action === "login" ? "Sign Up" : "Sign In"}
         </button>
-        <h2 className="text-5xl font-extrabold text-yellow-300">
-          Welcome to Kudos!
+        <h2 className="text-5xl font-extrabold text-amber-300">
+          Orbital<span className="text-teal-300">Memo</span>
         </h2>
         <p className="font-semibold text-slate-300">
           {action === "login"
-            ? "Log In To Give Some Praise!"
+            ? "Log In To start creating reminders!"
             : "Sign Up To Get Started!"}
         </p>
 
-        <form method="POST" className="rounded-2xl bg-gray-200 p-6 w-96">
+        <form method="POST" className="rounded-md bg-gray-200 p-6 w-96">
           <div className="text-xs font-semibold text-center tracking-wide text-red-500 w-full">
             {formError}
           </div>
@@ -168,7 +170,7 @@ export default function Login() {
             label="Email"
             value={formData.email}
             onChange={(e) => handleInputChange(e, "email")}
-            error={error?.email}
+            error={errors?.email}
           />
           <FormField
             htmlFor="password"
@@ -176,7 +178,7 @@ export default function Login() {
             label="Password"
             value={formData.password}
             onChange={(e) => handleInputChange(e, "password")}
-            error={error?.password}
+            error={errors?.password}
           />
           {action === "register" && (
             <>
@@ -185,26 +187,45 @@ export default function Login() {
                 label="First Name"
                 onChange={(e) => handleInputChange(e, "firstName")}
                 value={formData.firstName}
-                error={error?.firstName}
+                error={errors?.firstName}
               />
               <FormField
                 htmlFor="lastName"
                 label="Last Name"
                 onChange={(e) => handleInputChange(e, "lastName")}
                 value={formData.lastName}
-                error={error?.lastName}
+                error={errors?.lastName}
               />
             </>
           )}
           <div className="w-full text-center">
-            <button
-              type="submit"
-              name="_action"
-              value={action}
-              className="rounded-xl mt-2 bg-yellow-300 px-3 py-2 text-blue-600 font-semibold transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1"
-            >
-              {action === "login" ? "Sign In" : "Sign Up"}
-            </button>
+            <div className="flex flex-row justify-center">
+              <button
+                type="submit"
+                name="_action"
+                value={action}
+                className={`mt-2 rounded-md ${
+                  (colorMap.PRIMARY_DARK, backgroundColorMap.TEAL)
+                } font-semibold px-3 py-2 font-semibold transition duration-300 ease-in-out hover:bg-amber-300 hover:-translate-y-1`}
+              >
+                {action === "login" ? "Sign In" : "Sign Up"}
+              </button>
+              {formError && (
+                <>
+                  <button
+                    onClick={() => {
+                      setAction("register");
+                      setFormError("");
+                    }}
+                    className={`mt-2 rounded-md ${
+                      (colorMap.PRIMARY_DARK, backgroundColorMap.TEAL)
+                    } font-semibold px-3 py-2 font-semibold transition duration-300 ease-in-out hover:bg-amber-300 hover:-translate-y-1 ml-2`}
+                  >
+                    Sign up?
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </form>
       </div>

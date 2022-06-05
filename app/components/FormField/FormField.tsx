@@ -1,5 +1,6 @@
 import type { IFormField } from "./IFormField";
 import { useState, useEffect } from "react";
+import { colorMap } from "~/utils/constants";
 
 export function FormField({
   htmlFor,
@@ -16,7 +17,10 @@ export function FormField({
 
   return (
     <>
-      <label htmlFor={htmlFor} className="text-blue-600 font-semibold">
+      <label
+        htmlFor={htmlFor}
+        className={`font-semibold ${colorMap.PRIMARY_DARK}`}
+      >
         {label}
       </label>
       <input
@@ -27,11 +31,13 @@ export function FormField({
         type={type}
         id={htmlFor}
         name={htmlFor}
-        className="w-full p-2 rounded-xl my-2"
+        className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
         value={value}
       />
-      <div className="text-xs font-semibold text-center tracking-wide text-red-500 w-full">
-        {errorText || ""}
+      <div
+        className={`text-s font-semibold text-center tracking-wide w-full ${colorMap.RED}`}
+      >
+        {errorText || " "}
       </div>
     </>
   );
