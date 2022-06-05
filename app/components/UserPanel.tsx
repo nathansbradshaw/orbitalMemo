@@ -9,13 +9,14 @@ export function UserPanel({ users }: { users: User[] }) {
         <h2 className="text-xl text-blue-600 font-semibold">My Team</h2>
       </div>
       <div className="flex-1 overflow-y-scroll py-4 flex flex-col gap-y-10">
-        {users.map((user) => (
-          <UserCircle
-            key={user.id}
-            profile={user.profile}
-            className="h-24 w-24 mx-auto flex-shrink-0"
-          />
-        ))}
+        {users &&
+          users.map((user) => (
+            <UserCircle
+              key={user.id}
+              profile={user.profile}
+              className="h-24 w-24 mx-auto flex-shrink-0"
+            />
+          ))}
       </div>
       <div className="text-center p-6 bg-gray-300">
         <form action="/logout" method="post">
