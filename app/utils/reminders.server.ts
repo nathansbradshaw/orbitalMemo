@@ -24,3 +24,32 @@ export const createReminder = async (userId: string, reminder: IReminder) => {
     },
   });
 };
+
+export const getPastDueReminders = async (userId: string) => {
+  return prisma.reminder.findMany({
+    where: {
+      user: {
+        id: userId,
+      },
+      completed: false,
+      dueDate: {
+        lt: new Date(),
+      },
+    },
+  });
+};
+
+//get next reminder time
+export const getNextReminderTime = async (userId: string) => {
+  return prisma.reminder.findMany({
+    where: {
+      user: {
+        id: userId,
+      },
+      completed: false,
+      sendReminderAt: {
+        gt: new Date(),
+      },
+    },
+  });
+};
