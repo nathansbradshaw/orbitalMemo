@@ -12,6 +12,14 @@ export const getReminders = async (userId: string) => {
   });
 };
 
+export const getReminderById = async (reminderId: string) => {
+  return prisma.reminder.findUnique({
+    where: {
+      id: reminderId,
+    },
+  });
+};
+
 export const createReminder = async (userId: string, reminder: IReminder) => {
   return prisma.reminder.create({
     data: {
@@ -50,6 +58,32 @@ export const getNextReminderTime = async (userId: string) => {
       sendReminderAt: {
         gt: new Date(),
       },
+    },
+  });
+};
+
+export const deleteReminderById = async (reminderId: string) => {
+  return prisma.reminder.delete({
+    where: {
+      id: reminderId,
+    },
+  });
+};
+
+export const updateReminder = async (reminder: IReminder) => {
+  return prisma.reminder.update({
+    where: {
+      id: reminder.id,
+    },
+    data: {
+      title: reminder.title,
+      description: reminder.description,
+      dueDate: reminder.dueDate,
+      sendReminderAt: reminder.sendReminderAt,
+      repeatFreq: reminder.repeatFreq,
+      completed: reminder.completed,
+      pastCompletedDate: reminder.pastCompletedDate,
+      priority: reminder.priority,
     },
   });
 };

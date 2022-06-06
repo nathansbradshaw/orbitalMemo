@@ -41,6 +41,7 @@ export const pusherEventHandler = async (
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  console.log("action");
   const userId = await requireUserId(request);
   const form = await request.formData();
   const action = form.get("_action");
