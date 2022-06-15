@@ -19,6 +19,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 };
 
 export default function reminderId() {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { user, reminder } = useLoaderData();
   return (
     <Layout>
@@ -26,7 +27,7 @@ export default function reminderId() {
         <div className="w-full p-8 border-solid border-teal-600 border-4 my-3 ">
           <h1 className=" text-5xl">{reminder.title}</h1>
         </div>
-        <div className="container p-8 border-solid border-teal-600 border-4 w-full rounded-lg h-full">
+        <div className="container p-8 border-solid border-teal-600 border-4 w-full rounded-md h-full">
           <p>{reminder.description}</p>
         </div>
       </div>

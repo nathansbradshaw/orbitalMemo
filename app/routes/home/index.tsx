@@ -45,13 +45,13 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="h-full flex">
-        <Menu user={user} />
+      <div className='flex h-sceen'>
+        {/* <Menu user={user} /> */}
         <ReminderList
           reminders={reminders}
           // pastDueReminder={pastDueReminders}
         />
-        <div className="flex-1"></div>
+        <div className='flex-1'></div>
       </div>
     </Layout>
   );

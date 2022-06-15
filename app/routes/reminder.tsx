@@ -17,15 +17,13 @@ import { backgroundColorMap, colorMap } from "~/utils/constants";
 import { IReminder } from "~/utils/types.server";
 import { validateName } from "~/utils/validators.server";
 import Pusher from "pusher-js";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import styles from "../styles/reactDatePicker.css";
-
-export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
-};
+import { safeParseInt } from "~/utils/utils";
 
 export const loader: LoaderFunction = async ({ request }) => {
+  const userId = await requireUserId(request);
+  if (typeof userId !== "string") {
+    return redirect("/home");
+  }
   const appkey = process.env.PUSHER_APP_KEY;
   const cluster = process.env.PUSHER_CLUSTER;
   return json({ cluster });
@@ -48,28 +46,29 @@ export const pusherEventHandler = async (
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  console.log("action");
   const userId = await requireUserId(request);
+  if (typeof userId !== "string") {
+    return redirect("/home");
+  }
   const form = await request.formData();
   const action = form.get("_action");
   const title = form.get("title");
   const description = form.get("description");
   const dueDate = form.get("dueDate");
-  const time = form.get("reminderTime");
+  const reminderTime = form.get("reminderTime");
   const frequency = form.get("frequency");
   const sendReminderAt = form.get("sendReminderAt");
   const repeatFreq = form.get("repeatFreq");
   const priority = form.get("priority");
 
+  console.log(typeof dueDate);
   if (
     typeof action !== "string" ||
     typeof title !== "string" ||
     typeof description !== "string" ||
     typeof dueDate !== "string" ||
-    typeof time !== "string" ||
-    typeof frequency !== "number" ||
-    // typeof sendReminderAt !== "string" ||
-    typeof repeatFreq !== "string"
+    typeof reminderTime !== "string" ||
+    typeof frequency !== "string"
     // typeof priority !== "string"
   ) {
     console.log("Invalid form data");
@@ -81,10 +80,16 @@ export const action: ActionFunction = async ({ request }) => {
       { status: 400 }
     );
   }
-
+  console.log(typeof dueDate);
+  console.log(frequency);
+  const parsedDate = Date.parse(dueDate + " " + reminderTime);
   const errors = {
     title: validateName((title as string) || ""),
     description: validateName((description as string) || ""),
+    reminder: validateName((description as string) || ""),
+    frequency: validateName((frequency as string) || ""),
+    // reminderTime: validateName((description as string) || ""),
+    // dueDate: validateName((description as string) || ""),
   };
   if (Object.values(errors).some(Boolean)) {
     return json(
@@ -96,39 +101,55 @@ export const action: ActionFunction = async ({ request }) => {
       { status: 400 }
     );
   }
+  const freq = safeParseInt(frequency);
+  if (!freq) {
+    return json(
+      {
+        errors,
+        fields: { title, description },
+        form: action,
+      },
+      { status: 400 }
+    );
+  }
 
+  console.log(parsedDate);
   const reminder: IReminder = {
     title: title,
     description: description,
-    dueDate: new Date(Date.now() + 5 * 60 * 1000),
-    sendReminderAt: new Date(Date.now() + 5 * 60 * 1000),
+    dueDate: new Date(parsedDate),
+    sendReminderAt: new Date(parsedDate),
     completed: false,
-    repeatFreq: 0,
+    repeatFreq: freq,
     priority: 0,
   };
 
+  console.log(reminder);
   return (await addReminder(userId, reminder)) ? redirect("/") : null;
 };
 
 export default function Reminder() {
   const actionData = useActionData();
   const [errors, setErrors] = useState(actionData?.errors || {});
-  const [dueDate, setDueDate] = useState("");
   const [formData, setFormData] = useState({
     title: actionData?.fields?.title || "",
+    reminderTime: actionData?.fields?.reminderTime || "",
     description: actionData?.fields?.description || "",
     dueDate: actionData?.fields?.dueDate || "",
     time: actionData?.fields?.time || "",
     frequency: actionData?.fields?.time || 0,
   });
 
-  useEffect(() => { }, [actionData]);
+  const today = new Date().toLocaleDateString("en-CA");
+  useEffect(() => {}, [actionData]);
 
   const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>,
     field: string
   ) => {
-    console.log(event.target.value)
+    console.log(event.target.value);
     setFormData((form) => ({ ...form, [field]: event.target.value }));
   };
 
@@ -138,74 +159,70 @@ export default function Reminder() {
   return (
     <Layout>
       <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/2.14.1/react-datepicker.min.css"
+        rel='stylesheet'
+        href='https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/2.14.1/react-datepicker.min.css'
       />
 
       <div
-        className={`h-full justify-center items-center flex flex-col gap-y-4 ${backgroundColorMap.SECONDARY_GRADIANT}`}
+        className={`h-screen justify-center items-center flex flex-col gap-y-4 ${backgroundColorMap.SECONDARY_GRADIANT}`}
       >
-        <div className="rounded-md bg-gray-200 p-6 w-200">
-          <h1 className="text-5xl font-extrabold text-slate-900">
+        <div className='rounded-md bg-gray-200 p-6 w-200'>
+          <h1 className='text-5xl font-extrabold text-slate-900'>
             Add Reminder
           </h1>
-          <form method="POST">
+          <form method='POST'>
             <FormField
-              htmlFor="title"
-              label="Title"
+              htmlFor='title'
+              label='Title'
               value={formData.title}
               onChange={(e) => handleInputChange(e, "title")}
               error={errors?.title}
             />
             <FormField
-              htmlFor="description"
-              label="Description"
+              htmlFor='description'
+              label='Description'
               value={formData.description}
               onChange={(e) => handleInputChange(e, "description")}
               error={errors?.description}
             />
-            <div
-              className=""
-            >
-              <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
-                Due Date
-              </label>
-              <DatePicker
-                className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
-                selected={formData.dueDate}
-                onChange={(e: Date) => handleInputChange(e.toISOString, "dueDate")}
-                todayButton="Today"
-                filterDate={isPresent}
-              />
-            </div>
 
             <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
-              Repeat Frequency
+              Start date:
+            </label>
+
+            <input
+              type='date'
+              id='start'
+              name='dueDate'
+              value={formData.dueDate}
+              min={today}
+              max='2034-12-31'
+              className='w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1'
+              onChange={(e) => handleInputChange(e, "dueDate")}
+            />
+
+            <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
+              Time
             </label>
             <input
-              value={formData.time}
+              value={formData.reminderTime}
               onChange={(e) => handleInputChange(e, "reminderTime")}
-              type="time"
-              id="reminderTime"
-              name="reminderTime"
-              min="00:00"
-              max="12:00"
-              required
-              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
+              type='time'
+              id='reminderTime'
+              name='reminderTime'
+              className='w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1'
             />
 
             <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
               Repeat Frequency
             </label>
             <select
-              name="frequency"
-              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
+              name='frequency'
+              className='w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1'
               value={formData.frequency}
               onChange={(e) => handleInputChange(e, "frequency")}
             >
-              <option value={0}>
-                None
-              </option>
+              <option value={0}>None</option>
               <option value={10}>Daily</option>
               <option value={12}>Week Days</option>
               <option value={24}>Weekends</option>
@@ -215,10 +232,10 @@ export default function Reminder() {
             </select>
 
             <button
-              type="submit"
-              name="_action"
+              type='submit'
+              name='_action'
               value={"reminder"}
-              className="rounded-md bg-teal-300 font-semibold text-blue-600 px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1"
+              className='rounded-md bg-teal-300 font-semibold text-blue-600 px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1'
             >
               set new reminder
             </button>
