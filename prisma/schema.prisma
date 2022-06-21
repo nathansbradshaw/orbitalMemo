@@ -16,8 +16,14 @@ model User {
   updatedAt DateTime   @updatedAt
   email     String     @unique
   password  String
+  contact   Contact
   profile   Profile
   Reminder  Reminder[]
+}
+
+type Contact {
+  email String
+  phone String
 }
 
 type Profile {
@@ -39,4 +45,5 @@ model Reminder {
   priority          Int        @default(1)
   user              User       @relation(fields: [userId], references: [id])
   userId            String     @db.ObjectId
+  contact           String[]
 }

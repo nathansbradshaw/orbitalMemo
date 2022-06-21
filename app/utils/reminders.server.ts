@@ -4,6 +4,14 @@ import { IReminder } from "./types.server";
 
 export const getReminders = async (userId: string) => {
   return prisma.reminder.findMany({
+    orderBy: [
+      {
+        dueDate: "asc",
+      },
+      {
+        priority: "desc",
+      },
+    ],
     where: {
       user: {
         id: userId,
@@ -35,6 +43,14 @@ export const createReminder = async (userId: string, reminder: IReminder) => {
 
 export const getPastDueReminders = async (userId: string) => {
   return prisma.reminder.findMany({
+    orderBy: [
+      {
+        dueDate: "asc",
+      },
+      {
+        priority: "desc",
+      },
+    ],
     where: {
       user: {
         id: userId,
@@ -43,6 +59,25 @@ export const getPastDueReminders = async (userId: string) => {
       dueDate: {
         lt: new Date(),
       },
+    },
+  });
+};
+
+export const getUncompletedReminders = async (userId: string) => {
+  return prisma.reminder.findMany({
+    orderBy: [
+      {
+        dueDate: "asc",
+      },
+      {
+        priority: "desc",
+      },
+    ],
+    where: {
+      user: {
+        id: userId,
+      },
+      completed: false,
     },
   });
 };

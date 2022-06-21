@@ -159,28 +159,28 @@ export default function Reminder() {
   return (
     <Layout>
       <link
-        rel='stylesheet'
-        href='https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/2.14.1/react-datepicker.min.css'
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/2.14.1/react-datepicker.min.css"
       />
 
       <div
         className={`h-screen justify-center items-center flex flex-col gap-y-4 ${backgroundColorMap.SECONDARY_GRADIANT}`}
       >
-        <div className='rounded-md bg-gray-200 p-6 w-200'>
-          <h1 className='text-5xl font-extrabold text-slate-900'>
+        <div className="rounded-md bg-gray-200 p-6 w-200">
+          <h1 className="text-5xl font-extrabold text-slate-900">
             Add Reminder
           </h1>
-          <form method='POST'>
+          <form method="POST">
             <FormField
-              htmlFor='title'
-              label='Title'
+              htmlFor="title"
+              label="Title"
               value={formData.title}
               onChange={(e) => handleInputChange(e, "title")}
               error={errors?.title}
             />
             <FormField
-              htmlFor='description'
-              label='Description'
+              htmlFor="description"
+              label="Description"
               value={formData.description}
               onChange={(e) => handleInputChange(e, "description")}
               error={errors?.description}
@@ -191,13 +191,13 @@ export default function Reminder() {
             </label>
 
             <input
-              type='date'
-              id='start'
-              name='dueDate'
+              type="date"
+              id="start"
+              name="dueDate"
               value={formData.dueDate}
               min={today}
-              max='2034-12-31'
-              className='w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1'
+              max="2034-12-31"
+              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
               onChange={(e) => handleInputChange(e, "dueDate")}
             />
 
@@ -207,18 +207,18 @@ export default function Reminder() {
             <input
               value={formData.reminderTime}
               onChange={(e) => handleInputChange(e, "reminderTime")}
-              type='time'
-              id='reminderTime'
-              name='reminderTime'
-              className='w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1'
+              type="time"
+              id="reminderTime"
+              name="reminderTime"
+              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
             />
 
             <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
               Repeat Frequency
             </label>
             <select
-              name='frequency'
-              className='w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1'
+              name="frequency"
+              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
               value={formData.frequency}
               onChange={(e) => handleInputChange(e, "frequency")}
             >
@@ -230,12 +230,11 @@ export default function Reminder() {
               <option value={30}>Monthly</option>
               <option value={40}>Yearly</option>
             </select>
-
             <button
-              type='submit'
-              name='_action'
+              type="submit"
+              name="_action"
               value={"reminder"}
-              className='rounded-md bg-teal-300 font-semibold text-blue-600 px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1'
+              className="rounded-md bg-teal-300 font-semibold text-blue-600 px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1"
             >
               set new reminder
             </button>

@@ -11,6 +11,11 @@ export type LoginForm = {
   password: string;
 };
 
+export type IContact = {
+  email?: string;
+  phone?: string;
+};
+
 export type IReminder = {
   id?: string;
   userId?: string;
@@ -22,4 +27,5 @@ export type IReminder = {
   completed?: boolean;
   pastCompletedDate?: Date[];
   priority?: number;
+  contact?: string[];
 };

@@ -1,4 +1,4 @@
-// app/routes/home.tsx
+// app/routes/reminders.tsx
 
 import { LoaderFunction, json } from "@remix-run/node";
 import { getOtherUsers } from "~/utils/users.server";
@@ -7,13 +7,12 @@ import { Layout } from "~/components/Layout";
 import { Menu } from "~/components/menu";
 import { useLoaderData } from "@remix-run/react";
 import Pusher from "pusher-js";
-import { getUncompletedReminders } from "~/utils/reminders.server";
+import { getReminders } from "~/utils/reminders.server";
 import { ReminderList } from "~/components/ReminderList/ReminderList";
-import { IReminder } from "~/utils/types.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
-  const reminders = await getUncompletedReminders(userId);
+  const reminders = await getReminders(userId);
   const user = await getUser(request);
   const appkey = process.env.PUSHER_APP_KEY;
   const cluster = process.env.PUSHER_CLUSTER;
@@ -40,12 +39,14 @@ export const pusherEventHandler = async (
     return newMessage;
   });
 };
-export default function Home() {
+export default function Reminders() {
   const { reminders, userId, appkey, cluster, user } = useLoaderData();
+  // const pastDueReminders = pusherEventHandler(appkey, cluster, userId);
 
   return (
     <Layout>
       <div className="flex h-sceen">
+        {/* <Menu user={user} /> */}
         <ReminderList
           reminders={reminders}
           // pastDueReminder={pastDueReminders}
