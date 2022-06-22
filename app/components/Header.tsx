@@ -48,7 +48,7 @@ export default function Navbar() {
                   <NavLink
                     className=" hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1 rounded-md
                                      px-3 py-2 flex items-center text-xl uppercase font-bold leading-snug text-white"
-                    to="/"
+                    to={`/home/user/${user.profile.firstName}/${user.id}`}
                   >
                     <i className="fab fa-facebook-square text-lg leading-lg text-white"></i>
                     <span className="ml-2 text-teal-300">
@@ -69,7 +69,7 @@ export default function Navbar() {
                 <li className="nav-item hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1 rounded-md">
                   <NavLink
                     className="px-3 py-2 flex items-center text-xl uppercase font-bold leading-snug text-white"
-                    to="/reminder"
+                    to="/addReminder"
                   >
                     <i className="fab fa-pinterest text-lg leading-lg text-white"></i>
                     <span className="ml-2">New Reminder</span>

@@ -1,4 +1,4 @@
-// app/routes/reminder.tsx
+// app/routes/addReminder.tsx
 
 import {
   ActionFunction,
@@ -18,15 +18,20 @@ import { IReminder } from "~/utils/types.server";
 import { validateName } from "~/utils/validators.server";
 import Pusher from "pusher-js";
 import { safeParseInt } from "~/utils/utils";
+import { getReminderById } from "~/utils/reminders.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
+  const user = await getUser(request);
+  // const form = await request.formData();
+  // cosnt reminder = await getReminderById(params)
+
   if (typeof userId !== "string") {
     return redirect("/home");
   }
   const appkey = process.env.PUSHER_APP_KEY;
   const cluster = process.env.PUSHER_CLUSTER;
-  return json({ cluster });
+  return { cluster, user };
 };
 
 export const pusherEventHandler = async (
@@ -47,6 +52,9 @@ export const pusherEventHandler = async (
 
 export const action: ActionFunction = async ({ request }) => {
   const userId = await requireUserId(request);
+  const forms = await request.formData();
+  console.log(forms);
+
   if (typeof userId !== "string") {
     return redirect("/home");
   }
@@ -61,7 +69,7 @@ export const action: ActionFunction = async ({ request }) => {
   const repeatFreq = form.get("repeatFreq");
   const priority = form.get("priority");
 
-  console.log(typeof dueDate);
+  // console.log(typeof dueDate);
   if (
     typeof action !== "string" ||
     typeof title !== "string" ||
@@ -71,7 +79,7 @@ export const action: ActionFunction = async ({ request }) => {
     typeof frequency !== "string"
     // typeof priority !== "string"
   ) {
-    console.log("Invalid form data");
+    // console.log("Invalid form data");
     return json(
       {
         error: "Invalid Form Data",
@@ -80,8 +88,8 @@ export const action: ActionFunction = async ({ request }) => {
       { status: 400 }
     );
   }
-  console.log(typeof dueDate);
-  console.log(frequency);
+  // console.log(typeof dueDate);
+  // console.log(frequency);
   const parsedDate = Date.parse(dueDate + " " + reminderTime);
   const errors = {
     title: validateName((title as string) || ""),
@@ -113,7 +121,7 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  console.log(parsedDate);
+  // console.log(parsedDate);
   const reminder: IReminder = {
     title: title,
     description: description,
@@ -149,7 +157,7 @@ export default function Reminder() {
       | React.ChangeEvent<HTMLSelectElement>,
     field: string
   ) => {
-    console.log(event.target.value);
+    // console.log(event.target.value);
     setFormData((form) => ({ ...form, [field]: event.target.value }));
   };
 

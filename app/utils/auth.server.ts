@@ -1,7 +1,7 @@
 // app/utils/auth.server.ts
 
 import { prisma } from "./prisma.server";
-import { createUser } from "./users.server";
+import { createUser, deleteUser } from "./users.server";
 import { RegisterForm, LoginForm } from "./types.server";
 import bcrypt from "bcryptjs";
 import { redirect, json, createCookieSessionStorage } from "@remix-run/node";
@@ -114,6 +114,20 @@ export async function getUser(request: Request) {
 }
 
 export async function logout(request: Request) {
+  const session = await getUserSession(request);
+  return redirect("/login", {
+    headers: {
+      "set-cookie": await storage.destroySession(session),
+    },
+  });
+}
+
+export async function deleteUserAndSession(request: Request) {
+  const userId = await getUserId(request);
+  if (typeof userId !== "string") {
+    return null;
+  }
+  await deleteUser(userId);
   const session = await getUserSession(request);
   return redirect("/login", {
     headers: {

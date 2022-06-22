@@ -39,7 +39,7 @@ export function Menu({ user }: { user: User }) {
           >
             <NavLink
               className={`transition duration-300 ease-in-out text-slate-900 text-xl  p-6 w-full bg-gray-400 hover:bg-gray-300 focus:bg-gray-300`}
-              to="/reminder"
+              to="/addReminder"
             >
               New Reminder
             </NavLink>
@@ -50,8 +50,9 @@ export function Menu({ user }: { user: User }) {
         <form action="/logout" method="post">
           <button
             type="submit"
-            className={`rounded-md ${(colorMap.PRIMARY_DARK, backgroundColorMap.TEAL)
-              } font-semibold px-3 py-2 transition duration-300 ease-in-out hover:bg-teal-300 hover:-translate-y-1 hover:shadow-lg focus:shadow-lg`}
+            className={`rounded-md ${
+              (colorMap.PRIMARY_DARK, backgroundColorMap.TEAL)
+            } font-semibold px-3 py-2 transition duration-300 ease-in-out hover:bg-teal-300 hover:-translate-y-1 hover:shadow-lg focus:shadow-lg`}
           >
             Sign Out
           </button>
