@@ -5,7 +5,9 @@ import Header from "./Header";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`w-full font-mono ${backgroundColorMap.PRIMARY_GRADIAN}`}>
+    <div
+      className={`w-full font-mono ${backgroundColorMap.PRIMARY_GRADIAN} min-h-screen`}
+    >
       <Header />
       {children}
     </div>

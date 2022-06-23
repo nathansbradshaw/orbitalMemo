@@ -5,6 +5,8 @@ import { createUser, deleteUser } from "./users.server";
 import { RegisterForm, LoginForm } from "./types.server";
 import bcrypt from "bcryptjs";
 import { redirect, json, createCookieSessionStorage } from "@remix-run/node";
+import { createToken } from "~/lib/jwt";
+import { sendResetPasswordEmail } from "./mail.server";
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -13,7 +15,7 @@ if (!sessionSecret) {
 
 const storage = createCookieSessionStorage({
   cookie: {
-    name: "kudos-session",
+    name: "orbitalMemo-session",
     secure: process.env.NODE_ENV === "production",
     secrets: [sessionSecret],
     sameSite: "lax",
@@ -22,6 +24,15 @@ const storage = createCookieSessionStorage({
     httpOnly: true,
   },
 });
+
+export async function sendResetPasswordLink({ email }: { email: string }) {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (user) {
+    const token = createToken({ id: user.id });
+    await sendResetPasswordEmail(user, token);
+  }
+  return true;
+}
 
 export async function createUserSession(userId: string, redirectTo: string) {
   const session = await storage.getSession();
