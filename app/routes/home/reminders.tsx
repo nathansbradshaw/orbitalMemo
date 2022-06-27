@@ -85,6 +85,6 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Reminders() {
-  const { reminders } = useLoaderData();
-  return <ReminderList reminders={reminders} />;
+  // const { reminders } = useLoaderData();
+  return <div />;
 }

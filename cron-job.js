@@ -22,6 +22,10 @@ cron.schedule("* * * * *", async function () {
   //TODO batch send the reminders
   reminders.map((reminder) => {
     console.log("over due", reminder);
+    const newReminder = {
+      ...reminder,
+      completed: true,
+    };
     pusher.trigger(`reminder-${reminder.userId}`, "overdue", {
       reminder,
     });
@@ -60,6 +64,9 @@ const getAllPastDueReminders = async () => {
     where: {
       sendReminderAt: {
         lt: new Date(),
+      },
+      AND: {
+        completed: false,
       },
     },
   });

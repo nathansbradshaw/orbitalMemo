@@ -138,6 +138,9 @@ export async function deleteUserAndSession(request: Request) {
   if (typeof userId !== "string") {
     return null;
   }
+  await prisma.reminder.deleteMany({
+    where: { userId },
+  });
   await deleteUser(userId);
   const session = await getUserSession(request);
   return redirect("/login", {
