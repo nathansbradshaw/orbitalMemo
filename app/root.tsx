@@ -13,7 +13,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
 } from "@remix-run/react";
 
 export const meta: MetaFunction = () => ({
@@ -26,17 +25,13 @@ export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
 };
 
-const pusher = new Pusher("68236b4a0d5f637fabeb", {
-  cluster: "us2",
-});
-// console.log(PUSHER_APP_KEY);
-// const test = "blah";
+export type IContextType = {
+  pusher: Pusher | null;
+};
+const pusher: Pusher = new Pusher("68236b4a0d5f637fabeb", { cluster: "us2" });
+const context: IContextType = { pusher };
 
-// const context = { pusher };
-// const context = { test };
 export default function App() {
-  const pusher = useLoaderData();
-  const context = { pusher };
   return (
     <html lang="en">
       <head>

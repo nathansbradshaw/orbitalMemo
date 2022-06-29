@@ -7,7 +7,11 @@ import {
   LoaderFunction,
   redirect,
 } from "@remix-run/node";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import {
+  useActionData,
+  useLoaderData,
+  useOutletContext,
+} from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { FormField } from "~/components/FormField/FormField";
 import { Layout } from "~/components/Layout";
@@ -16,9 +20,11 @@ import { getUser, requireUserId } from "~/utils/auth.server";
 import { backgroundColorMap, colorMap } from "~/utils/constants";
 import { IReminder } from "~/utils/types.server";
 import { validateName } from "~/utils/validators.server";
-import Pusher from "pusher-js";
+
 import { safeParseInt } from "~/utils/utils";
 import { getReminderById } from "~/utils/reminders.server";
+import { IContextType } from "~/root";
+import Pusher from "pusher-js";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
@@ -35,15 +41,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const pusherEventHandler = async (
-  appkey: string,
-  cluster: any,
-  userId: any,
-  reminder: IReminder
+  reminder: IReminder,
+  userId: string,
+  pusher: Pusher
 ) => {
-  const pusher = new Pusher(appkey, {
-    cluster: cluster,
-  });
-
   const channel = pusher.subscribe(`reminder-${userId}`);
   channel.trigger("new-reminder", {
     reminder: reminder,
@@ -133,6 +134,8 @@ export const action: ActionFunction = async ({ request }) => {
   };
 
   console.log(reminder);
+  const { pusher } = useOutletContext<IContextType>();
+
   return (await addReminder(userId, reminder)) ? redirect("/") : null;
 };
 

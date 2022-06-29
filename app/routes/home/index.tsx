@@ -11,6 +11,7 @@ import { getUncompletedReminders } from "~/utils/reminders.server";
 import { ReminderList } from "~/components/ReminderList/ReminderList";
 import { IReminder } from "~/utils/types.server";
 import { useEffect, useState } from "react";
+import { IContextType } from "~/root";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
@@ -22,35 +23,13 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({ reminders, userId, user, appkey, cluster });
 };
 
-// export const pusherEventHandler = async (
-//   appkey: string,
-//   cluster: any,
-//   userId: any
-// ) => {
-//   const pusher = new Pusher(appkey, {
-//     cluster: cluster,
-//   });
-
-//   const channel = pusher.subscribe(`reminder-${userId}`);
-//   channel.bind("overdue", function (newMessage: any) {
-//     // find id of element to update
-
-//     // update element
-
-//     console.log(newMessage);
-//     return newMessage;
-//   });
-// };
 export default function Home() {
   const { reminders, userId, appkey, cluster, user } = useLoaderData();
 
   const [allReminders, setAllReminders] = useState(reminders);
-  const { pusher } = useOutletContext<Pusher>();
+  const { pusher } = useOutletContext<IContextType>();
   useEffect(() => {
-    console.log("pusher", pusher);
-
     if (pusher) {
-      console.log("pusher", pusher);
       // const message = pusherEventHandler(appkey, cluster, userId);
       const channel = pusher.subscribe(`reminder-${userId}`);
       channel.bind("overdue", function (newMessage: any) {

@@ -5,10 +5,12 @@ import { getOtherUsers } from "~/utils/users.server";
 import { getUser, requireUserId } from "~/utils/auth.server";
 import { Layout } from "~/components/Layout";
 import { Menu } from "~/components/menu";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useOutletContext } from "@remix-run/react";
 import Pusher from "pusher-js";
 import { getReminders } from "~/utils/reminders.server";
 import { ReminderList } from "~/components/ReminderList/ReminderList";
+import { useEffect, useState } from "react";
+import { IContextType } from "~/root";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
@@ -20,27 +22,29 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({ reminders, userId, user, appkey, cluster });
 };
 
-export const pusherEventHandler = async (
-  appkey: string,
-  cluster: any,
-  userId: any
-) => {
-  const pusher = new Pusher(appkey, {
-    cluster: cluster,
-  });
-
-  const channel = pusher.subscribe(`reminder-${userId}`);
-  channel.bind("overdue", function (newMessage: any) {
-    // find id of element to update
-
-    // update element
-
-    console.log(newMessage);
-    return newMessage;
-  });
-};
 export default function Reminders() {
   const { reminders, userId, appkey, cluster, user } = useLoaderData();
+  const [allReminders, setAllReminders] = useState(reminders);
+  const { pusher } = useOutletContext<IContextType>();
+  useEffect(() => {
+    if (pusher) {
+      // const message = pusherEventHandler(appkey, cluster, userId);
+      const channel = pusher.subscribe(`reminder-${userId}`);
+      channel.bind("overdue", function (newMessage: any) {
+        // find id of element to update
+        const { reminder } = newMessage;
+        const newReminders = [...allReminders];
+        newReminders.forEach((rem) => {
+          if (rem.id === reminder.id) {
+            rem.completed = true;
+          }
+        });
+        setAllReminders(newReminders);
+        return newMessage;
+      });
+      setAllReminders(reminders);
+    }
+  }, [allReminders]);
   // const pastDueReminders = pusherEventHandler(appkey, cluster, userId);
 
   return (
