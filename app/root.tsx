@@ -25,17 +25,10 @@ export const meta: MetaFunction = () => ({
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
 };
-// console.log(process.env.PUSHER_APP_KEY);
 
-export const loader: LoaderFunction = async ({}) => {
-  const appkey = process.env.PUSHER_APP_KEY;
-  const cluster = process.env.PUSHER_CLUSTER;
-  const pusher = new Pusher(appkey, {
-    cluster: cluster,
-  });
-  return json({ appkey, cluster, pusher });
-};
-
+const pusher = new Pusher("68236b4a0d5f637fabeb", {
+  cluster: "us2",
+});
 // console.log(PUSHER_APP_KEY);
 // const test = "blah";
 
