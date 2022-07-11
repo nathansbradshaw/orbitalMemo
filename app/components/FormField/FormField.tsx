@@ -1,6 +1,7 @@
 import type { IFormField } from "./IFormField";
 import { useState, useEffect } from "react";
 import { colorMap } from "~/utils/constants";
+import { Input, Alert, Textarea } from "@material-tailwind/react";
 
 export function FormField({
   htmlFor,
@@ -9,6 +10,12 @@ export function FormField({
   value,
   onChange = () => {},
   error = "",
+  maxlength,
+  formType,
+  max,
+  min,
+  color,
+  className = "my-4",
 }: IFormField) {
   const [errorText, setErrorText] = useState(error);
   useEffect(() => {
@@ -16,29 +23,48 @@ export function FormField({
   }, [error]);
 
   return (
-    <>
-      <label
-        htmlFor={htmlFor}
-        className={`font-semibold ${colorMap.PRIMARY_DARK}`}
-      >
-        {label}
-      </label>
-      <input
-        onChange={(e) => {
-          onChange(e);
-          setErrorText("");
-        }}
-        type={type}
-        id={htmlFor}
-        name={htmlFor}
-        className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
-        value={value}
-      />
-      <div
-        className={`text-s font-semibold text-center tracking-wide w-full ${colorMap.RED}`}
-      >
-        {errorText || " "}
-      </div>
-    </>
+    <div className={className}>
+      {formType === "textarea" ? (
+        <>
+          <Textarea
+            onChange={(e) => {
+              onChange(e);
+              setErrorText("");
+            }}
+            variant="outlined"
+            label={label}
+            id={htmlFor}
+            name={htmlFor}
+            value={value}
+            maxLength={maxlength}
+          />
+          <Alert show={!!errorText} color="red" className="my-2">
+            {errorText || " "}
+          </Alert>
+        </>
+      ) : (
+        <>
+          <Input
+            onChange={(e) => {
+              onChange(e);
+              setErrorText("");
+            }}
+            variant="outlined"
+            label={label}
+            type={type}
+            id={htmlFor}
+            name={htmlFor}
+            value={value}
+            maxLength={maxlength}
+            max={max}
+            min={min}
+            color={color}
+          />
+          <Alert show={!!errorText} color="red" className="my-2">
+            {errorText || " "}
+          </Alert>
+        </>
+      )}
+    </div>
   );
 }

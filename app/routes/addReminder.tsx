@@ -25,6 +25,7 @@ import { safeParseInt } from "~/utils/utils";
 import { getReminderById } from "~/utils/reminders.server";
 import { IContextType } from "~/root";
 import Pusher from "pusher-js";
+import { Card, Input } from "@material-tailwind/react";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
@@ -175,7 +176,7 @@ export default function Reminder() {
       <div
         className={`h-screen justify-center items-center flex flex-col gap-y-4 ${backgroundColorMap.SECONDARY_GRADIANT}`}
       >
-        <div className="rounded-md bg-gray-200 p-6 w-200">
+        <Card className="rounded-md bg-gray-200 p-6 w-200">
           <h1 className="text-5xl font-extrabold text-slate-900">
             Add Reminder
           </h1>
@@ -186,6 +187,7 @@ export default function Reminder() {
               value={formData.title}
               onChange={(e) => handleInputChange(e, "title")}
               error={errors?.title}
+              maxlength={100}
             />
             <FormField
               htmlFor="description"
@@ -193,33 +195,25 @@ export default function Reminder() {
               value={formData.description}
               onChange={(e) => handleInputChange(e, "description")}
               error={errors?.description}
+              formType="textarea"
             />
-
-            <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
-              Due date:
-            </label>
-
-            <input
+            <FormField
+              htmlFor="dueDate"
+              label="Due Date"
               type="date"
-              id="start"
-              name="dueDate"
-              value={formData.dueDate}
               min={today}
               max="2034-12-31"
-              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
+              value={formData.dueDate}
               onChange={(e) => handleInputChange(e, "dueDate")}
+              error={errors?.description}
             />
-
-            <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
-              Time
-            </label>
-            <input
+            <FormField
+              htmlFor="reminderTime"
+              label="Time"
+              type="time"
               value={formData.reminderTime}
               onChange={(e) => handleInputChange(e, "reminderTime")}
-              type="time"
-              id="reminderTime"
-              name="reminderTime"
-              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
+              error={errors?.reminderTime}
             />
 
             <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
@@ -227,7 +221,7 @@ export default function Reminder() {
             </label>
             <select
               name="frequency"
-              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
+              className="w-full p-2 rounded-md my-2 border border-grey-400 bg-grey-100"
               value={formData.frequency}
               onChange={(e) => handleInputChange(e, "frequency")}
             >
@@ -248,7 +242,7 @@ export default function Reminder() {
               set new reminder
             </button>
           </form>
-        </div>
+        </Card>
       </div>
     </Layout>
   );

@@ -4,7 +4,6 @@ import { LoaderFunction, json } from "@remix-run/node";
 import { getOtherUsers } from "~/utils/users.server";
 import { getUser, requireUserId } from "~/utils/auth.server";
 import { Layout } from "~/components/Layout";
-import { Menu } from "~/components/menu";
 import { useLoaderData, useOutlet, useOutletContext } from "@remix-run/react";
 import Pusher from "pusher-js";
 import { getUncompletedReminders } from "~/utils/reminders.server";

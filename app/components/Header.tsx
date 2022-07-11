@@ -5,7 +5,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { AiOutlineClose } from "react-icons/ai";
 import { json, LoaderFunction } from "@remix-run/node";
 import { getUser, requireUserId } from "~/utils/auth.server";
-
+import { Button } from "@material-tailwind/react";
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
   console.log(user);
@@ -75,14 +75,11 @@ export default function Navbar() {
                     <span className="ml-2">New Reminder</span>
                   </NavLink>
                 </li>
-                <li className="nav-item hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1 rounded-md">
+                <li className="nav-item ">
                   <form action="/logout" method="post">
-                    <button
-                      type="submit"
-                      className="rounded-xl bg-yellow-300 font-semibold text-blue-600 px-3 py-2 transition duration-300 ease-in-out hover:bg-yellow-400 hover:-translate-y-1"
-                    >
+                    <Button color="cyan" type="submit">
                       Sign Out
-                    </button>
+                    </Button>
                   </form>
                 </li>
               </ul>

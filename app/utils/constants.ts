@@ -10,7 +10,7 @@ export const colorMap = {
 };
 
 export const backgroundColorMap = {
-  PRIMARY_GRADIAN: "bg-gradient-to-tr from-slate-900 to-zinc-900",
+  PRIMARY_GRADIAN: "bg-gradient-to-tr from-slate-800 to-slate-900",
   SECONDARY_GRADIANT:
     "bg-gradient-to-tr from-slate-900 via-indigo-900 to-purple-900",
   RED: "bg-red-400",
