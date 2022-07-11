@@ -4,7 +4,7 @@ if (!env) {
   const hostname = typeof window !== "undefined" && window?.location?.hostname;
   env = "development";
   if (hostname) {
-    if (hostname.includes("orbital")) {
+    if (hostname.includes("n8bradshaw")) {
       env = "production";
     }
   } else {

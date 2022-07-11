@@ -16,7 +16,7 @@ model User {
   updatedAt DateTime   @updatedAt
   email     String     @unique
   password  String
-  contact   Contact
+  contact   Contact?
   profile   Profile
   Reminder  Reminder[]
 }

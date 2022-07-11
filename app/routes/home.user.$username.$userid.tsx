@@ -1,3 +1,4 @@
+import { Button, Card, Typography } from "@material-tailwind/react";
 import { LoaderFunction, redirect } from "@remix-run/node";
 import { useActionData, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
@@ -39,54 +40,57 @@ export default function UserPage() {
   return (
     <Layout>
       <div className="p-8 h-full w-full text-slate-50">
-        <div className="w-full p-8 border-solid border-teal-600 border-4 my-3 ">
-          <h1 className=" text-5xl">Hello {user.profile.firstName}</h1>
-        </div>
-        <div className="container p-8 border-solid border-teal-600 border-4 w-full rounded-md h-full ">
+        <Card>
+          <div className="w-full p-8 my-3 ">
+            <h1 className=" text-5xl">
+              Hello {user.profile.firstName} {user.profile.lastName}
+            </h1>
+          </div>
+          <div className="container p-8   ">
+            <form action={`/addReminder?`} method="POST">
+              <input type="hidden" name="reminderId" value={user.id} />
+              <button
+                type="submit"
+                name="_action"
+                value={"edit"}
+                className="rounded-md bg-teal-500 text-slate-900 p-6 h-full "
+              >
+                Edit Contact
+              </button>
+            </form>
+          </div>
+        </Card>
+        <Card className="my-8 p-6">
+          <Typography>Danger Zone</Typography>
           <form
             action={`/home/accountServices?${user.id}`}
             method="POST"
-            className="bg-gray-200 text-gray-900 "
+            className="bg-gray-200 text-gray-900 w-full flex flex-wrap"
           >
             <FormField
               htmlFor="title"
               label={`Type in your user id: "${user.id}" to enable the delete button`}
               value={formData.title}
               onChange={(e) => handleInputChange(e, "title")}
+              color="red"
+              className="w-5/6"
               //   error={errors?.title}
             />
             <input type="hidden" name="reminderId" value={user.id} />
-            <button
+            <Button
               type="submit"
               name="_action"
               value={"delete"}
-              className={`rounded-md ${
+              className={`rounded-md mx-3 ${
                 showDelete ? "bg-red-400" : "bg-gray-600"
-              } text-slate-900 p-6 h-full`}
+              } text-slate-900 p-6 `}
               disabled={!showDelete}
+              color={showDelete ? "red" : "grey"}
             >
               Delete Account
-            </button>
+            </Button>
           </form>
-
-          <form action={`/addReminder?`} method="POST">
-            <input type="hidden" name="reminderId" value={user.id} />
-            <button
-              type="submit"
-              name="_action"
-              value={"edit"}
-              className="rounded-md bg-teal-500 text-slate-900 p-6 h-full "
-            >
-              Edit Reminder
-            </button>
-          </form>
-        </div>
-        <div className="container p-8 border-solid border-teal-600 border-4 w-full rounded-md h-full">
-          <p>{}</p>
-        </div>
-        <div className="container p-8 border-solid border-teal-600 border-4 w-full rounded-md h-full">
-          <p>{}</p>
-        </div>
+        </Card>
       </div>
     </Layout>
     // TODO: add delete user option

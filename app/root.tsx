@@ -1,5 +1,11 @@
-import type { MetaFunction, LinksFunction } from "@remix-run/node";
-import styles from './styles/app.css';
+import {
+  MetaFunction,
+  LinksFunction,
+  json,
+  LoaderFunction,
+} from "@remix-run/node";
+import styles from "./styles/app.css";
+import Pusher from "pusher-js";
 import {
   Links,
   LiveReload,
@@ -16,8 +22,14 @@ export const meta: MetaFunction = () => ({
 });
 
 export const links: LinksFunction = () => {
-  return [{ rel: 'stylesheet', href: styles }]
-}
+  return [{ rel: "stylesheet", href: styles }];
+};
+
+export type IContextType = {
+  pusher: Pusher | null;
+};
+const pusher: Pusher = new Pusher("68236b4a0d5f637fabeb", { cluster: "us2" });
+const context: IContextType = { pusher };
 
 export default function App() {
   return (
@@ -27,7 +39,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <Outlet context={context} />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

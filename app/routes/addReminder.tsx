@@ -7,7 +7,11 @@ import {
   LoaderFunction,
   redirect,
 } from "@remix-run/node";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import {
+  useActionData,
+  useLoaderData,
+  useOutletContext,
+} from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { FormField } from "~/components/FormField/FormField";
 import { Layout } from "~/components/Layout";
@@ -16,9 +20,12 @@ import { getUser, requireUserId } from "~/utils/auth.server";
 import { backgroundColorMap, colorMap } from "~/utils/constants";
 import { IReminder } from "~/utils/types.server";
 import { validateName } from "~/utils/validators.server";
-import Pusher from "pusher-js";
+
 import { safeParseInt } from "~/utils/utils";
 import { getReminderById } from "~/utils/reminders.server";
+import { IContextType } from "~/root";
+import Pusher from "pusher-js";
+import { Card, Input } from "@material-tailwind/react";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
@@ -35,15 +42,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const pusherEventHandler = async (
-  appkey: string,
-  cluster: any,
-  userId: any,
-  reminder: IReminder
+  reminder: IReminder,
+  userId: string,
+  pusher: Pusher
 ) => {
-  const pusher = new Pusher(appkey, {
-    cluster: cluster,
-  });
-
   const channel = pusher.subscribe(`reminder-${userId}`);
   channel.trigger("new-reminder", {
     reminder: reminder,
@@ -51,14 +53,14 @@ export const pusherEventHandler = async (
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  // Authenticate user
   const userId = await requireUserId(request);
-  const forms = await request.formData();
-  console.log(forms);
-
   if (typeof userId !== "string") {
     return redirect("/home");
   }
+  // Get form data
   const form = await request.formData();
+  console.log("form data", form);
   const action = form.get("_action");
   const title = form.get("title");
   const description = form.get("description");
@@ -68,8 +70,7 @@ export const action: ActionFunction = async ({ request }) => {
   const sendReminderAt = form.get("sendReminderAt");
   const repeatFreq = form.get("repeatFreq");
   const priority = form.get("priority");
-
-  // console.log(typeof dueDate);
+  // Validate form data
   if (
     typeof action !== "string" ||
     typeof title !== "string" ||
@@ -79,7 +80,6 @@ export const action: ActionFunction = async ({ request }) => {
     typeof frequency !== "string"
     // typeof priority !== "string"
   ) {
-    // console.log("Invalid form data");
     return json(
       {
         error: "Invalid Form Data",
@@ -88,40 +88,44 @@ export const action: ActionFunction = async ({ request }) => {
       { status: 400 }
     );
   }
-  // console.log(typeof dueDate);
-  // console.log(frequency);
+
   const parsedDate = Date.parse(dueDate + " " + reminderTime);
   const errors = {
     title: validateName((title as string) || ""),
     description: validateName((description as string) || ""),
-    reminder: validateName((description as string) || ""),
     frequency: validateName((frequency as string) || ""),
-    // reminderTime: validateName((description as string) || ""),
-    // dueDate: validateName((description as string) || ""),
+    reminderTime: validateName((reminderTime as string) || ""),
+    dueDate: validateName((dueDate as string) || ""),
   };
   if (Object.values(errors).some(Boolean)) {
     return json(
       {
         errors,
-        fields: { title, description },
+        fields: {
+          title,
+          description,
+          frequency,
+          reminderTime,
+          dueDate,
+        },
         form: action,
       },
       { status: 400 }
     );
   }
   const freq = safeParseInt(frequency);
-  if (!freq) {
+  if (freq === undefined || freq === null) {
     return json(
       {
         errors,
-        fields: { title, description },
+        fields: { frequency },
         form: action,
       },
       { status: 400 }
     );
   }
 
-  // console.log(parsedDate);
+  // Create reminder
   const reminder: IReminder = {
     title: title,
     description: description,
@@ -131,8 +135,6 @@ export const action: ActionFunction = async ({ request }) => {
     repeatFreq: freq,
     priority: 0,
   };
-
-  console.log(reminder);
   return (await addReminder(userId, reminder)) ? redirect("/") : null;
 };
 
@@ -174,7 +176,7 @@ export default function Reminder() {
       <div
         className={`h-screen justify-center items-center flex flex-col gap-y-4 ${backgroundColorMap.SECONDARY_GRADIANT}`}
       >
-        <div className="rounded-md bg-gray-200 p-6 w-200">
+        <Card className="rounded-md bg-gray-200 p-6 w-200">
           <h1 className="text-5xl font-extrabold text-slate-900">
             Add Reminder
           </h1>
@@ -185,6 +187,7 @@ export default function Reminder() {
               value={formData.title}
               onChange={(e) => handleInputChange(e, "title")}
               error={errors?.title}
+              maxlength={100}
             />
             <FormField
               htmlFor="description"
@@ -192,33 +195,25 @@ export default function Reminder() {
               value={formData.description}
               onChange={(e) => handleInputChange(e, "description")}
               error={errors?.description}
+              formType="textarea"
             />
-
-            <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
-              Start date:
-            </label>
-
-            <input
+            <FormField
+              htmlFor="dueDate"
+              label="Due Date"
               type="date"
-              id="start"
-              name="dueDate"
-              value={formData.dueDate}
               min={today}
               max="2034-12-31"
-              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
+              value={formData.dueDate}
               onChange={(e) => handleInputChange(e, "dueDate")}
+              error={errors?.description}
             />
-
-            <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
-              Time
-            </label>
-            <input
+            <FormField
+              htmlFor="reminderTime"
+              label="Time"
+              type="time"
               value={formData.reminderTime}
               onChange={(e) => handleInputChange(e, "reminderTime")}
-              type="time"
-              id="reminderTime"
-              name="reminderTime"
-              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
+              error={errors?.reminderTime}
             />
 
             <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
@@ -226,7 +221,7 @@ export default function Reminder() {
             </label>
             <select
               name="frequency"
-              className="w-full p-2 rounded-md my-2 hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1"
+              className="w-full p-2 rounded-md my-2 border border-grey-400 bg-grey-100"
               value={formData.frequency}
               onChange={(e) => handleInputChange(e, "frequency")}
             >
@@ -247,7 +242,7 @@ export default function Reminder() {
               set new reminder
             </button>
           </form>
-        </div>
+        </Card>
       </div>
     </Layout>
   );
