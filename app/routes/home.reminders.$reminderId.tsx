@@ -59,7 +59,26 @@ export default function reminderId() {
             <div className="text-slate-500 p-2 w-auto">
               <hr />
               <Typography className="text-center">Due Date</Typography>
-              <p>{dueDate.toLocaleDateString("en-US", options)}</p>
+              <p>{dueDate.toLocaleDateString("en-US", options as any)}</p>
+
+              {reminder.pastCompletedDate.length > 0 ? (
+                <div>
+                  <hr />
+                  <Typography className="text-center">
+                    Past Completions
+                  </Typography>
+                  {reminder.pastCompletedDate.map((date: string) => (
+                    <p key={date}>
+                      {new Date(date).toLocaleDateString(
+                        "en-US",
+                        options as any
+                      )}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </CardBody>

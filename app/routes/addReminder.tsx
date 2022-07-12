@@ -30,8 +30,6 @@ import { Card, Input } from "@material-tailwind/react";
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
   const user = await getUser(request);
-  // const form = await request.formData();
-  // cosnt reminder = await getReminderById(params)
 
   if (typeof userId !== "string") {
     return redirect("/home");
@@ -77,7 +75,8 @@ export const action: ActionFunction = async ({ request }) => {
     typeof description !== "string" ||
     typeof dueDate !== "string" ||
     typeof reminderTime !== "string" ||
-    typeof frequency !== "string"
+    typeof frequency !== "string" ||
+    typeof priority !== "string"
     // typeof priority !== "string"
   ) {
     return json(
@@ -96,6 +95,7 @@ export const action: ActionFunction = async ({ request }) => {
     frequency: validateName((frequency as string) || ""),
     reminderTime: validateName((reminderTime as string) || ""),
     dueDate: validateName((dueDate as string) || ""),
+    priority: validateName((priority as string) || ""),
   };
   if (Object.values(errors).some(Boolean)) {
     return json(
@@ -107,6 +107,7 @@ export const action: ActionFunction = async ({ request }) => {
           frequency,
           reminderTime,
           dueDate,
+          priority,
         },
         form: action,
       },
@@ -114,11 +115,17 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
   const freq = safeParseInt(frequency);
-  if (freq === undefined || freq === null) {
+  const pri = safeParseInt(priority);
+  if (
+    freq === undefined ||
+    freq === null ||
+    pri === undefined ||
+    pri === null
+  ) {
     return json(
       {
         errors,
-        fields: { frequency },
+        fields: { frequency, priority },
         form: action,
       },
       { status: 400 }
@@ -133,7 +140,7 @@ export const action: ActionFunction = async ({ request }) => {
     sendReminderAt: new Date(parsedDate),
     completed: false,
     repeatFreq: freq,
-    priority: 0,
+    priority: pri,
   };
   return (await addReminder(userId, reminder)) ? redirect("/") : null;
 };
@@ -148,6 +155,7 @@ export default function Reminder() {
     dueDate: actionData?.fields?.dueDate || "",
     time: actionData?.fields?.time || "",
     frequency: actionData?.fields?.time || 0,
+    priority: actionData?.fields?.priority || 0,
   });
 
   const today = new Date().toLocaleDateString("en-CA");
@@ -227,11 +235,25 @@ export default function Reminder() {
             >
               <option value={0}>None</option>
               <option value={10}>Daily</option>
-              <option value={12}>Week Days</option>
-              <option value={24}>Weekends</option>
+              {/* <option value={12}>Week Days</option>
+              <option value={24}>Weekends</option> */}
               <option value={20}>Weekly</option>
               <option value={30}>Monthly</option>
               <option value={40}>Yearly</option>
+            </select>
+
+            <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
+              Priority
+            </label>
+            <select
+              name="priority"
+              className="w-full p-2 rounded-md my-2 border border-grey-400 bg-grey-100"
+              value={formData.priority}
+              onChange={(e) => handleInputChange(e, "priority")}
+            >
+              <option value={0}>None</option>
+              <option value={1}>Low</option>
+              <option value={10}>High</option>
             </select>
             <button
               type="submit"

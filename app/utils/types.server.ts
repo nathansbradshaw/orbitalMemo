@@ -28,4 +28,5 @@ export type IReminder = {
   pastCompletedDate?: Date[];
   priority?: number;
   contact?: string[];
+  pulse?: boolean;
 };

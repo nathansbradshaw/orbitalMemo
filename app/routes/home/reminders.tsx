@@ -70,12 +70,75 @@ export const action: ActionFunction = async ({ request }) => {
     const completedTime = new Date();
     let pastCompletedDate = reminder.pastCompletedDate;
     pastCompletedDate.push(completedTime);
-    const updatedReminder: IReminder = {
-      ...reminder,
-      completed: true,
-      pastCompletedDate: pastCompletedDate,
-    };
+    let updatedReminder: IReminder | undefined;
 
+    switch (reminder.repeatFreq) {
+      case 0:
+        updatedReminder = {
+          ...reminder,
+          completed: true,
+          pastCompletedDate: pastCompletedDate,
+        };
+        break;
+      case 10: // daily
+        updatedReminder = {
+          ...reminder,
+          dueDate: new Date(reminder.dueDate.getTime() + 24 * 60 * 60 * 1000),
+          sendReminderAt: new Date(
+            reminder.sendReminderAt.getTime() + 24 * 60 * 60 * 1000
+          ),
+          completed: false,
+          pastCompletedDate: pastCompletedDate,
+        };
+        break;
+      case 20: // weekly
+        updatedReminder = {
+          ...reminder,
+          dueDate: new Date(
+            reminder.dueDate.getTime() + 7 * 24 * 60 * 60 * 1000
+          ),
+          sendReminderAt: new Date(
+            reminder.sendReminderAt.getTime() + 7 * 24 * 60 * 60 * 1000
+          ),
+          completed: false,
+          pastCompletedDate: pastCompletedDate,
+        };
+        break;
+      case 30: // monthly
+        updatedReminder = {
+          ...reminder,
+          dueDate: new Date(
+            reminder.dueDate.getTime() + 30 * 24 * 60 * 60 * 1000
+          ),
+          sendReminderAt: new Date(
+            reminder.sendReminderAt.getTime() + 30 * 24 * 60 * 60 * 1000
+          ),
+          completed: false,
+          pastCompletedDate: pastCompletedDate,
+        };
+        break;
+      case 40: // yearly
+        updatedReminder = {
+          ...reminder,
+          dueDate: new Date(
+            reminder.dueDate.getTime() + 365 * 24 * 60 * 60 * 1000
+          ),
+          sendReminderAt: new Date(
+            reminder.sendReminderAt.getTime() + 365 * 24 * 60 * 60 * 1000
+          ),
+          completed: false,
+          pastCompletedDate: pastCompletedDate,
+        };
+        break;
+
+      default:
+        updatedReminder = {
+          ...reminder,
+          completed: true,
+          pastCompletedDate: pastCompletedDate,
+        };
+        break;
+    }
     return await updateUserReminder(userId, updatedReminder), redirect("/home");
   }
   if (action === "delete") {
