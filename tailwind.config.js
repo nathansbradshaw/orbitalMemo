@@ -18,6 +18,21 @@ module.exports = withMT({
           900: "#0F172A",
         },
       },
+      keyframes: {
+        wave: {
+          "0%": { transform: "scale(1.05,1.05)" },
+          "10%": { transform: "scale(.95, .95)" },
+          "20%": { transform: "scale(1.05, 1.05)" },
+          "30%": { transform: "scale(.95, .95)" },
+          "40%": { transform: "scale(1.05, 1.05)" },
+          "50%": { transform: "scale(.95, .95)" },
+          "60%": { transform: "scale(1.05, 1.05)" },
+          "100%": { transform: "scale(1, 1)" },
+        },
+      },
+      animation: {
+        "waving-hand": "wave 1s linear infinite",
+      },
     },
   },
   plugins: [],

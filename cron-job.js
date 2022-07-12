@@ -18,14 +18,10 @@ cron.schedule("* * * * *", async function () {
   //TODO get all the reminders
   const reminders = await getAllPastDueReminders();
   console.log("reminders", reminders);
-
+  //TODO send the reminders to the pusher
   //TODO batch send the reminders
-  reminders.map((reminder) => {
+  reminders.map(async (reminder) => {
     console.log("over due", reminder);
-    const newReminder = {
-      ...reminder,
-      completed: true,
-    };
     pusher.trigger(`reminder-${reminder.userId}`, "overdue", {
       reminder,
     });
@@ -43,6 +39,24 @@ cron.schedule("* * * * *", async function () {
     // delay the reminder
     //TODO send reminder to user
     //TODO update reminder to past due
+    switch (reminder.priority) {
+      case 0: // none
+        await updateReminderSendTime(reminder, 60);
+        break;
+      case 1: // low
+        await updateReminderSendTime(reminder, 30);
+        break;
+      case 5: // medium
+        await updateReminderSendTime(reminder, 15);
+        break;
+      case 10: // high
+        await updateReminderSendTime(reminder, 1);
+        break;
+      default:
+        await updateReminderSendTime(reminder, 60);
+        break;
+    }
+    // await updateReminderSendTime(reminder, 1);
     //TODO reset reoccuring reminders
   });
 });
@@ -68,6 +82,18 @@ const getAllPastDueReminders = async () => {
       AND: {
         completed: false,
       },
+    },
+  });
+};
+
+// update reminder to send reminder again in 1 minute
+const updateReminderSendTime = async (reminder, time) => {
+  console.log("update reminder");
+  return prisma.reminder.update({
+    where: { id: reminder.id },
+    data: {
+      // TODO update 999 tp 1000
+      sendReminderAt: new Date(Date.now() + time * 60 * 999),
     },
   });
 };

@@ -28,8 +28,6 @@ export default function UserPage() {
     event: React.ChangeEvent<HTMLInputElement>,
     field: string
   ) => {
-    console.log("vall");
-    console.log(event.target.value);
     if (event.target.value === user.id) {
       setShowDelete(true);
     } else {
@@ -59,6 +57,35 @@ export default function UserPage() {
               </button>
             </form>
           </div>
+        </Card>
+        <Card className="my-8 p-6">
+          <Typography>Current Email: {user.contact}</Typography>
+          <form
+            action={`/home/accountServices?${user.id}`}
+            method="POST"
+            className="bg-gray-200 text-gray-900 w-full flex flex-wrap"
+          >
+            <FormField
+              htmlFor="email"
+              label="New Email"
+              // value={formData.email}
+              onChange={(e) => handleInputChange(e, "email")}
+              className="w-5/6"
+            />
+            <input type="hidden" name="reminderId" value={user.id} />
+            <Button
+              type="submit"
+              name="_action"
+              value={"change_contact"}
+              className={`rounded-md mx-3 ${
+                showDelete ? "bg-red-400" : "bg-gray-600"
+              } text-slate-900 p-6 `}
+              disabled={!showDelete}
+              color={showDelete ? "blue" : "blue"}
+            >
+              Change Email
+            </Button>
+          </form>
         </Card>
         <Card className="my-8 p-6">
           <Typography>Danger Zone</Typography>

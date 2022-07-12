@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Navbar() {
   const { user } = useLoaderData() || {};
-  // console.log(user);
+
   const [navbarOpen, setNavbarOpen] = useState(false);
   return (
     <>
@@ -60,10 +60,20 @@ export default function Navbar() {
                   <NavLink
                     className=" hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1 rounded-md
                                     px-3 py-2 flex items-center text-xl uppercase font-bold leading-snug text-white "
+                    to="/"
+                  >
+                    <i className="fab fa-twitter text-lg leading-lg text-white"></i>
+                    <span className="ml-2">Home</span>
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    className=" hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1 rounded-md
+                                    px-3 py-2 flex items-center text-xl uppercase font-bold leading-snug text-white "
                     to="/reminders"
                   >
                     <i className="fab fa-twitter text-lg leading-lg text-white"></i>
-                    <span className="ml-2">Reminders</span>
+                    <span className="ml-2">All Reminders</span>
                   </NavLink>
                 </li>
                 <li className="nav-item hover:shadow-lg focus:shadow-lg  transition duration-300 ease-in-out hover:-translate-y-1 focus:-translate-y-1 rounded-md">
