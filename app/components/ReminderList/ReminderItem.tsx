@@ -15,6 +15,7 @@ export function ReminderItem({
   const actionData = useActionData();
   useEffect(() => {}, [actionData]);
   const dueDate = new Date(Reminder.dueDate);
+  console.log("server", Reminder.dueDate, "Local", dueDate);
   let options = {
     weekday: "long",
     year: "numeric",
