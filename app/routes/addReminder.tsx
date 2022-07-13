@@ -26,7 +26,6 @@ import { getReminderById } from "~/utils/reminders.server";
 import { IContextType } from "~/root";
 import Pusher from "pusher-js";
 import { Card, Input } from "@material-tailwind/react";
-import { adjustForUTCOffset } from "~/utils/helpers/adjustForUTCOffset";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
@@ -137,8 +136,8 @@ export const action: ActionFunction = async ({ request }) => {
   const reminder: IReminder = {
     title: title,
     description: description,
-    dueDate: adjustForUTCOffset(new Date(parsedDate)),
-    sendReminderAt: adjustForUTCOffset(new Date(parsedDate)),
+    dueDate: new Date(parsedDate),
+    sendReminderAt: new Date(parsedDate),
     completed: false,
     repeatFreq: freq,
     priority: pri,

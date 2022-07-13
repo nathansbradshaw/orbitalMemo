@@ -642,6 +642,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin: 0.5rem;
 }
 
+.m-10 {
+  margin: 2.5rem;
+}
+
 .mx-px {
   margin-left: 1px;
   margin-right: 1px;
@@ -737,6 +741,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .mt-6 {
   margin-top: 1.5rem;
+}
+
+.mt-10 {
+  margin-top: 2.5rem;
 }
 
 .block {
@@ -2102,6 +2110,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding-right: 0.5rem;
 }
 
+.py-10 {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+.px-10 {
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}
+
 .pt-0\.5 {
   padding-top: 0.125rem;
 }
@@ -2148,6 +2166,14 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .pb-1 {
   padding-bottom: 0.25rem;
+}
+
+.pt-10 {
+  padding-top: 2.5rem;
+}
+
+.pr-10 {
+  padding-right: 2.5rem;
 }
 
 .text-left {
