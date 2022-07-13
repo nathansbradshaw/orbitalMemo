@@ -89,6 +89,9 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   const parsedDate = Date.parse(dueDate + " " + reminderTime);
+  console.log("parsedDate", parsedDate);
+  console.log("dueDate", new Date(parsedDate));
+  console.log("original", dueDate, reminderTime);
   const errors = {
     title: validateName((title as string) || ""),
     description: validateName((description as string) || ""),
