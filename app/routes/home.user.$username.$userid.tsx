@@ -44,19 +44,7 @@ export default function UserPage() {
               Hello {user.profile.firstName} {user.profile.lastName}
             </h1>
           </div>
-          <div className="container p-8   ">
-            <form action={`/addReminder?`} method="POST">
-              <input type="hidden" name="reminderId" value={user.id} />
-              <button
-                type="submit"
-                name="_action"
-                value={"edit"}
-                className="rounded-md bg-teal-500 text-slate-900 p-6 h-full "
-              >
-                Edit Contact
-              </button>
-            </form>
-          </div>
+          <div className="container p-8   "></div>
         </Card>
         <Card className="my-8 p-6">
           <Typography>Current Email: {user.contact}</Typography>

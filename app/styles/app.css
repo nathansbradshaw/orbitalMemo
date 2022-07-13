@@ -2492,6 +2492,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: rgb(255 202 40 / var(--tw-text-opacity));
 }
 
+.text-grey-200 {
+  --tw-text-opacity: 1;
+  color: rgb(238 238 238 / var(--tw-text-opacity));
+}
+
 .antialiased {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -4015,6 +4020,11 @@ Ensure the default browser behavior of the `hidden` attribute.
 .hover\:text-blue-500:hover {
   --tw-text-opacity: 1;
   color: rgb(33 150 243 / var(--tw-text-opacity));
+}
+
+.hover\:underline:hover {
+  -webkit-text-decoration-line: underline;
+          text-decoration-line: underline;
 }
 
 .hover\:opacity-75:hover {

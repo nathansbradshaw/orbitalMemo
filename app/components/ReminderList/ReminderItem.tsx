@@ -53,7 +53,7 @@ export function ReminderItem({
               <CardBody className="flex">
                 <a
                   href={`/home/reminders/${Reminder.id}`}
-                  className="text-4xl text-amber-300 grow hover:cursor-pointer hover:text-blue-500 hover:uppercase"
+                  className="text-4xl text-amber-300 grow hover:cursor-pointer hover:text-blue-500 hover:underline"
                 >
                   {Reminder?.title}
                 </a>
