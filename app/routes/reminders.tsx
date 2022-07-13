@@ -23,9 +23,10 @@ export default function Reminders() {
 
   return (
     <Layout>
-      <Typography variant="h1" className={"m-6 text-center text-grey-200"}>
-        Home
-      </Typography>
+      <h1 className="text-5xl font-extrabold text-grey-200 font-sans text-center m-20">
+        All Reminders
+      </h1>
+
       <div className="flex h-sceen">
         <ReminderList reminders={reminders} userId={userId} />
         <div className="flex-1"></div>
