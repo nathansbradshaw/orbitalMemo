@@ -26,6 +26,7 @@ import { getReminderById } from "~/utils/reminders.server";
 import { IContextType } from "~/root";
 import Pusher from "pusher-js";
 import { Card, Input } from "@material-tailwind/react";
+import { adjustForTimezone } from "~/utils/helpers/adjustForTimezone";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
@@ -90,8 +91,25 @@ export const action: ActionFunction = async ({ request }) => {
 
   const parsedDate = Date.parse(dueDate + " " + reminderTime);
   console.log("parsedDate", parsedDate);
-  console.log("dueDate", new Date(parsedDate));
-  console.log("original", dueDate, reminderTime);
+  console.log(
+    "dueDate",
+    new Date(parsedDate),
+    "offset",
+    new Date(parsedDate).getTimezoneOffset()
+  );
+  console.log(
+    "original",
+    dueDate,
+    reminderTime,
+    "offset",
+    new Date(dueDate + " " + reminderTime).getTimezoneOffset()
+  );
+  console.log(
+    "offset original",
+    adjustForTimezone(new Date(dueDate + " " + reminderTime))
+  );
+  console.log("offset new", adjustForTimezone(new Date(parsedDate)));
+
   const errors = {
     title: validateName((title as string) || ""),
     description: validateName((description as string) || ""),
