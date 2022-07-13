@@ -69,6 +69,7 @@ export const action: ActionFunction = async ({ request }) => {
   const sendReminderAt = form.get("sendReminderAt");
   const repeatFreq = form.get("repeatFreq");
   const priority = form.get("priority");
+  const timeZoneOffset = form.get("timeZoneOffset");
   // Validate form data
   if (
     typeof action !== "string" ||
@@ -77,7 +78,8 @@ export const action: ActionFunction = async ({ request }) => {
     typeof dueDate !== "string" ||
     typeof reminderTime !== "string" ||
     typeof frequency !== "string" ||
-    typeof priority !== "string"
+    typeof priority !== "string" ||
+    typeof timeZoneOffset !== "string"
     // typeof priority !== "string"
   ) {
     return json(
@@ -90,26 +92,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   const parsedDate = Date.parse(dueDate + " " + reminderTime);
-  console.log("parsedDate", parsedDate);
-  console.log(
-    "dueDate",
-    new Date(parsedDate),
-    "offset",
-    new Date(parsedDate).getTimezoneOffset()
-  );
-  console.log(
-    "original",
-    dueDate,
-    reminderTime,
-    "offset",
-    new Date(dueDate + " " + reminderTime).getTimezoneOffset()
-  );
-  console.log(
-    "offset original",
-    adjustForTimezone(new Date(dueDate + " " + reminderTime))
-  );
-  console.log("offset new", adjustForTimezone(new Date(parsedDate)));
-
+  const date = new Date(parsedDate);
   const errors = {
     title: validateName((title as string) || ""),
     description: validateName((description as string) || ""),
@@ -117,6 +100,7 @@ export const action: ActionFunction = async ({ request }) => {
     reminderTime: validateName((reminderTime as string) || ""),
     dueDate: validateName((dueDate as string) || ""),
     priority: validateName((priority as string) || ""),
+    timeZoneOffset: validateName((timeZoneOffset as string) || ""),
   };
   if (Object.values(errors).some(Boolean)) {
     return json(
@@ -152,13 +136,15 @@ export const action: ActionFunction = async ({ request }) => {
       { status: 400 }
     );
   }
+  const offset = safeParseInt(timeZoneOffset) ?? 0;
+  const offsetDate = adjustForTimezone(date, offset);
 
   // Create reminder
   const reminder: IReminder = {
     title: title,
     description: description,
-    dueDate: new Date(parsedDate),
-    sendReminderAt: new Date(parsedDate),
+    dueDate: new Date(offsetDate),
+    sendReminderAt: new Date(offsetDate),
     completed: false,
     repeatFreq: freq,
     priority: pri,
@@ -177,11 +163,15 @@ export default function Reminder() {
     time: actionData?.fields?.time || "",
     frequency: actionData?.fields?.time || 0,
     priority: actionData?.fields?.priority || 0,
+    timeZoneOffset: actionData?.fields?.timeZoneOffset || 0,
   });
+  const [timeZoneOffset, setTimeZoneOffset] = useState(0);
 
   const today = new Date().toLocaleDateString("en-CA");
   useEffect(() => {}, [actionData]);
-
+  useEffect(() => {
+    setTimeZoneOffset(new Date().getTimezoneOffset());
+  }, []);
   const handleInputChange = (
     event:
       | React.ChangeEvent<HTMLInputElement>
@@ -262,7 +252,7 @@ export default function Reminder() {
               <option value={30}>Monthly</option>
               <option value={40}>Yearly</option>
             </select>
-
+            <input type="hidden" name="timeZoneOffset" value={timeZoneOffset} />
             <label className={`font-semibold ${colorMap.PRIMARY_DARK}`}>
               Priority
             </label>
