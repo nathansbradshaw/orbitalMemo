@@ -84,7 +84,7 @@ export default function reminderId() {
         </CardBody>
 
         <CardFooter className="flex items-center justify-between py-3" divider>
-          <form action={`/addReminder?${reminder.id}`} method="POST">
+          {/* <form action={`/addReminder?${reminder.id}`} method="POST">
             <input type="hidden" name="reminderId" value={reminder.id} />
             <Button
               type="submit"
@@ -94,7 +94,7 @@ export default function reminderId() {
             >
               Edit Reminder
             </Button>
-          </form>
+          </form> */}
           <form action={`/home/reminders?${reminder.id}`} method="POST">
             <input type="hidden" name="reminderId" value={reminder.id} />
             <Button

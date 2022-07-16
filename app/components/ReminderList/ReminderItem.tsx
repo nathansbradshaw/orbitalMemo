@@ -33,7 +33,7 @@ export function ReminderItem({
     } else if (pastDue) {
       return "Overdue";
     } else {
-      return "Due";
+      return "Coming up";
     }
   };
   return (
@@ -120,7 +120,7 @@ export function ReminderItem({
                           value={Reminder.id}
                         />
 
-                        <Button
+                        {/* <Button
                           color="cyan"
                           type="submit"
                           name="_action"
@@ -128,7 +128,7 @@ export function ReminderItem({
                           className="rounded-md text-slate-900 m-2 p-6 h-full min-w-full "
                         >
                           Edit
-                        </Button>
+                        </Button> */}
 
                         <Button
                           color="red"
